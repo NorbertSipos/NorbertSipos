@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "theses": {
+    "th_exxx_grw_20261022_8730": {
+      "ticker": "EXXX",
+      "status": "ACTIVE",
+      "thesis_type": "growth_momentum",
+      "created_at": "2026-10-22",
+      "updated_at": "2026-10-22",
+      "next_review_date": "2026-11-21",
+      "review_status": "OK",
+      "origin_fingerprint": "e518140cabeb6c38"
+    },
+    "th_sxr8_grw_20261022_665d": {
+      "ticker": "SXR8",
+      "status": "ACTIVE",
+      "thesis_type": "growth_momentum",
+      "created_at": "2026-10-22",
+      "updated_at": "2026-10-22",
+      "next_review_date": "2026-11-21",
+      "review_status": "OK",
+      "origin_fingerprint": "c3c970989d8435dc"
+    },
+    "th_spcx_grw_20261022_8941": {
+      "ticker": "SPCX",
+      "status": "ACTIVE",
+      "thesis_type": "growth_momentum",
+      "created_at": "2026-10-22",
+      "updated_at": "2026-10-22",
+      "next_review_date": "2026-11-21",
+      "review_status": "OK",
+      "origin_fingerprint": "2f48b2e0695fa69d"
+    },
+    "th_tvbetetf_grw_20261022_cfa3": {
+      "ticker": "TVBETETF",
+      "status": "ACTIVE",
+      "thesis_type": "growth_momentum",
+      "created_at": "2026-10-22",
+      "updated_at": "2026-10-22",
+      "next_review_date": "2026-11-21",
+      "review_status": "OK",
+      "origin_fingerprint": "7e9f87a86326429e"
+    }
+  }
+}
