@@ -1,0 +1,22 @@
+{
+  "baseCurrency": "EUR",
+  "accounts": [
+    {
+      "name": "Interactive Brokers",
+      "currency": "EUR",
+      "holdings": [
+        {"symbol": "EXXX.DE", "label": "EXXX", "name": "iShares ATX UCITS ETF", "units": 16.376, "avgPrice": 63.29, "currency": "EUR", "newsQuery": "ATX Austria stock index"},
+        {"symbol": "SXR8.DE", "label": "SXR8", "name": "iShares Core S&P 500", "units": 1.1644, "avgPrice": 649.65, "currency": "EUR", "newsQuery": "S&P 500"},
+        {"symbol": "SPCX", "label": "SPCX", "name": "Space Exploration Technologies Cl A", "units": 1.5321, "avgPrice": 144.24, "currency": "USD", "newsQuery": "SpaceX stock SPCX"}
+      ]
+    },
+    {
+      "name": "Tradeville",
+      "currency": "RON",
+      "holdings": [
+        {"symbol": "TVBETETF.RO", "label": "TVBETETF", "name": "FDI ETF BET Patria-Tradeville", "units": 157, "avgPrice": 51.4874, "currency": "RON", "newsQuery": "BVB BET Bursa de Valori Bucuresti"}
+      ]
+    }
+  ],
+  "marketNews": ["stock market today", "Fed interest rates", "Europe stocks"]
+}

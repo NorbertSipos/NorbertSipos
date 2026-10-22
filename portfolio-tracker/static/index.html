@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio Tracker</title>
+<style>
+:root{
+  --bg:#0b0f17;--panel:#121826;--panel2:#171f31;--line:#232d44;--text:#e8edf7;--muted:#8a96b0;
+  --up:#2ecc8f;--down:#ff5c6c;--accent:#6c8cff;--c1:#6c8cff;--c2:#2ecc8f;--c3:#f5b84b;--c4:#b57cff;
+}
+@media (prefers-color-scheme: light){
+  :root{--bg:#f2f4f9;--panel:#fff;--panel2:#f6f8fc;--line:#e2e7f1;--text:#161c2b;--muted:#667089;--up:#0f9d63;--down:#d93a4b}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1200px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+h1{font-size:20px;margin:0;letter-spacing:.2px}
+.status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted)}
+.dot.live{background:var(--up);box-shadow:0 0 0 0 var(--up);animation:pulse 2s infinite}
+.dot.err{background:var(--down)}
+@keyframes pulse{70%{box-shadow:0 0 0 8px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.grid{display:grid;gap:14px}
+.kpis{grid-template-columns:repeat(4,1fr);margin-bottom:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.kpi .l{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.6px}
+.kpi .v{font-size:26px;font-weight:650;margin-top:6px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:13px;margin-top:2px;font-variant-numeric:tabular-nums}
+.up{color:var(--up)}.down{color:var(--down)}.mut{color:var(--muted)}
+.main{grid-template-columns:2fr 1fr;align-items:start;margin-bottom:14px}
+h2{font-size:13px;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin:0 0 12px;font-weight:600}
+.acct{margin-bottom:18px}
+.acct:last-child{margin-bottom:0}
+.acct-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.acct-h b{font-size:15px}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-size:11px;color:var(--muted);font-weight:500;text-align:right;padding:6px 8px;text-transform:uppercase;letter-spacing:.5px}
+td{text-align:right;padding:10px 8px;border-top:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+.sym b{display:block;font-size:14px}.sym span{color:var(--muted);font-size:11px}
+.bar{height:4px;background:var(--panel2);border-radius:4px;margin-top:5px;min-width:60px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent)}
+.alloc{display:flex;flex-direction:column;align-items:center;gap:14px}
+.legend{width:100%;display:grid;gap:8px}
+.legend div{display:flex;align-items:center;gap:8px;font-size:13px}
+.legend i{width:10px;height:10px;border-radius:3px}
+.legend span:last-child{margin-left:auto;font-variant-numeric:tabular-nums}
+.warn{width:100%;background:rgba(245,184,75,.12);border:1px solid rgba(245,184,75,.35);color:var(--c3);border-radius:10px;padding:8px 10px;font-size:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{border:1px solid var(--line);background:var(--panel2);color:var(--muted);padding:4px 10px;border-radius:999px;font-size:12px;cursor:pointer}
+.chip.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.news a{display:block;padding:11px 0;border-top:1px solid var(--line);color:var(--text);text-decoration:none}
+.news a:first-child{border-top:0}
+.news a:hover .t{color:var(--accent)}
+.news .t{font-weight:500}
+.news .m{color:var(--muted);font-size:12px;margin-top:2px}
+.foot{color:var(--muted);font-size:11px;margin-top:20px;text-align:center}
+.msg{color:var(--muted);padding:20px 0;text-align:center}
+@media(max-width:900px){.kpis{grid-template-columns:repeat(2,1fr)}.main{grid-template-columns:1fr}.hide-s{display:none}.card{overflow-x:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>📈 Portfolio Tracker</h1>
+    <div class="status"><span class="dot" id="dot"></span><span id="status">connecting…</span></div>
+  </header>
+
+  <section class="grid kpis" id="kpis"></section>
+
+  <section class="grid main">
+    <div class="card"><h2>Holdings</h2><div id="holdings"><div class="msg">Loading…</div></div></div>
+    <div class="card"><h2>Allocation (EUR)</h2><div class="alloc" id="alloc"></div></div>
+  </section>
+
+  <section class="card">
+    <h2>News</h2>
+    <div class="chips" id="chips"></div>
+    <div class="news" id="news"><div class="msg">Loading news…</div></div>
+  </section>
+
+  <div class="foot">Data from Yahoo Finance &amp; Google News, delayed and unofficial. Not financial advice. Edit holdings in portfolio.json.</div>
+</div>
+
+<script>
+const COLORS=['var(--c1)','var(--c2)','var(--c3)','var(--c4)','#ff8a5c','#4cc9f0'];
+let P=null,Q={},NEWS=[],filter='All';
+
+const $=id=>document.getElementById(id);
+const sign=n=>n>0?'+':'';
+const cls=n=>n>0?'up':n<0?'down':'mut';
+const fmt=(n,d=2)=>n==null||isNaN(n)?'—':n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const money=(n,c,d=2)=>n==null||isNaN(n)?'—':fmt(n,d)+' '+({EUR:'€',USD:'$',RON:'RON'}[c]||c);
+const esc=s=>String(s||'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+// rate = units of currency per 1 EUR
+function rate(c){
+  if(c==='EUR')return 1;
+  const k=c==='USD'?'EURUSD=X':c==='RON'?'EURRON=X':null;
+  return k&&Q[k]&&Q[k].price?Q[k].price:null;
+}
+const toEUR=(a,c)=>{const r=rate(c);return r?a/r:null};
+const conv=(a,from,to)=>{const e=toEUR(a,from),r=rate(to);return e==null||!r?null:e*r};
+
+function compute(){
+  const accts=P.accounts.map(a=>{
+    const rows=a.holdings.map(h=>{
+      const q=Q[h.symbol]||{};
+      const price=q.price??null;
+      const value=price!=null?h.units*price:null;
+      const cost=h.units*h.avgPrice;
+      const pl=value!=null?value-cost:null;
+      const day=q.change!=null?h.units*q.change:null;
+      return {...h,q,price,value,cost,pl,plPct:pl!=null?pl/cost*100:null,day,
+        valueEUR:value!=null?toEUR(value,h.currency):null,
+        costEUR:toEUR(cost,h.currency),dayEUR:day!=null?toEUR(day,h.currency):null,
+        plEUR:pl!=null?toEUR(pl,h.currency):null};
+    });
+    const sum=k=>rows.reduce((s,r)=>s+(r[k]||0),0);
+    const value=sum('valueEUR'),cost=sum('costEUR'),day=sum('dayEUR');
+    return {a,rows,valueEUR:value,costEUR:cost,dayEUR:day,plEUR:value-cost};
+  });
+  const T={value:0,cost:0,day:0};
+  accts.forEach(x=>{T.value+=x.valueEUR;T.cost+=x.costEUR;T.day+=x.dayEUR});
+  T.pl=T.value-T.cost;
+  return {accts,T};
+}
+
+function render(){
+  if(!P)return;
+  const {accts,T}=compute();
+  const prev=T.value-T.day;
+  const all=accts.flatMap(x=>x.rows).filter(r=>r.valueEUR!=null);
+  const best=[...all].sort((a,b)=>b.q.changePct-a.q.changePct)[0];
+  const worst=[...all].sort((a,b)=>a.q.changePct-b.q.changePct)[0];
+  $('kpis').innerHTML=`
+   <div class="card kpi"><div class="l">Total value</div><div class="v">${money(T.value,'EUR')}</div><div class="s mut">${all.length} positions · ${P.accounts.length} accounts</div></div>
+   <div class="card kpi"><div class="l">Today</div><div class="v ${cls(T.day)}">${sign(T.day)}${money(T.day,'EUR')}</div><div class="s ${cls(T.day)}">${sign(T.day)}${fmt(prev?T.day/prev*100:0)}%</div></div>
+   <div class="card kpi"><div class="l">Total P/L</div><div class="v ${cls(T.pl)}">${sign(T.pl)}${money(T.pl,'EUR')}</div><div class="s ${cls(T.pl)}">${sign(T.pl)}${fmt(T.cost?T.pl/T.cost*100:0)}% on ${money(T.cost,'EUR',0)}</div></div>
+   <div class="card kpi"><div class="l">Today's movers</div><div class="v" style="font-size:16px;line-height:1.5">
+     ${best?`<span class="${cls(best.q.changePct)}">${best.q.changePct>=0?'▲':'▼'} ${esc(best.label)} ${sign(best.q.changePct)}${fmt(best.q.changePct)}%</span><br>`:''}
+     ${worst?`<span class="${cls(worst.q.changePct)}">${worst.q.changePct>=0?'▲':'▼'} ${esc(worst.label)} ${sign(worst.q.changePct)}${fmt(worst.q.changePct)}%</span>`:''}</div></div>`;
+
+  $('holdings').innerHTML=accts.map(x=>{
+    const ac=x.a.currency,v=conv(x.valueEUR,'EUR',ac),d=conv(x.dayEUR,'EUR',ac),p=conv(x.plEUR,'EUR',ac);
+    return `<div class="acct"><div class="acct-h"><b>${esc(x.a.name)}</b>
+      <span>${money(v,ac,0)} · <span class="${cls(d)}">${sign(d)}${fmt(d,0)} today</span> · <span class="${cls(p)}">${sign(p)}${fmt(p,0)} P/L</span></span></div>
+      <table><thead><tr><th>Asset</th><th>Price</th><th>Today</th><th class="hide-s">Chart</th><th>Value</th><th>P/L</th><th class="hide-s">Weight</th></tr></thead><tbody>
+      ${x.rows.map(r=>{
+        const w=r.valueEUR!=null&&T.value?r.valueEUR/T.value*100:0,c=r.q.changePct;
+        return `<tr><td class="sym"><b>${esc(r.label)}</b><span>${esc(r.name)}</span></td>
+        <td>${money(r.price,r.currency)}<div class="mut" style="font-size:11px">avg ${fmt(r.avgPrice)}</div></td>
+        <td class="${cls(c)}">${c!=null?sign(c)+fmt(c)+'%':'—'}<div style="font-size:11px">${r.day!=null?sign(r.day)+fmt(r.day):''}</div></td>
+        <td class="hide-s">${spark(r.q.spark,c)}</td>
+        <td>${money(r.value,r.currency)}<div class="mut" style="font-size:11px">${fmt(r.units,4)} units</div></td>
+        <td class="${cls(r.pl)}">${r.pl!=null?sign(r.pl)+fmt(r.pl):'—'}<div style="font-size:11px">${r.plPct!=null?sign(r.plPct)+fmt(r.plPct)+'%':''}</div></td>
+        <td class="hide-s">${fmt(w,1)}%<div class="bar"><i style="width:${w}%"></i></div></td></tr>`}).join('')}
+      </tbody></table></div>`}).join('');
+
+  renderAlloc(all,T.value);
+}
+
+function spark(d,chg){
+  if(!d||d.length<2)return '<span class="mut">—</span>';
+  const w=90,h=28,mn=Math.min(...d),mx=Math.max(...d),r=mx-mn||1;
+  const pts=d.map((v,i)=>`${(i/(d.length-1)*w).toFixed(1)},${(h-2-(v-mn)/r*(h-4)).toFixed(1)}`).join(' ');
+  return `<svg width="${w}" height="${h}"><polyline fill="none" stroke="${chg>=0?'var(--up)':'var(--down)'}" stroke-width="1.6" points="${pts}"/></svg>`;
+}
+
+function renderAlloc(rows,total){
+  if(!total){$('alloc').innerHTML='<div class="msg">No data</div>';return}
+  const R=54,C=2*Math.PI*R;let off=0;
+  const arcs=rows.map((r,i)=>{
+    const f=r.valueEUR/total,len=f*C;
+    const s=`<circle r="${R}" cx="70" cy="70" fill="none" stroke="${COLORS[i%COLORS.length]}" stroke-width="22" stroke-dasharray="${len} ${C-len}" stroke-dashoffset="${-off}" transform="rotate(-90 70 70)"/>`;
+    off+=len;return s});
+  const top=[...rows].sort((a,b)=>b.valueEUR-a.valueEUR)[0];
+  const tw=top.valueEUR/total*100;
+  $('alloc').innerHTML=`<svg width="160" height="160" viewBox="0 0 140 140">${arcs.join('')}
+    <text x="70" y="66" text-anchor="middle" fill="var(--muted)" font-size="9">TOTAL</text>
+    <text x="70" y="82" text-anchor="middle" fill="var(--text)" font-size="13" font-weight="700">${fmt(total,0)} €</text></svg>
+    <div class="legend">${rows.map((r,i)=>`<div><i style="background:${COLORS[i%COLORS.length]}"></i><span>${esc(r.label)}</span><span>${fmt(r.valueEUR/total*100,1)}%</span></div>`).join('')}</div>
+    ${tw>45?`<div class="warn">⚠ ${esc(top.label)} is ${fmt(tw,0)}% of your total. High concentration.</div>`:''}`;
+}
+
+function ago(t){
+  const s=Date.now()/1000-t;
+  if(s<3600)return Math.max(1,Math.round(s/60))+'m ago';
+  if(s<86400)return Math.round(s/3600)+'h ago';
+  return Math.round(s/86400)+'d ago';
+}
+function renderNews(){
+  const labels=['All',...P.accounts.flatMap(a=>a.holdings.map(h=>h.label))];
+  $('chips').innerHTML=labels.map(l=>`<span class="chip ${l===filter?'on':''}" data-l="${esc(l)}">${esc(l)}</span>`).join('');
+  const q=filter==='All'?null:P.accounts.flatMap(a=>a.holdings).find(h=>h.label===filter).newsQuery;
+  const items=NEWS.filter(n=>!q||n.query===q).slice(0,25);
+  $('news').innerHTML=items.length?items.map(n=>`<a href="${esc(n.link)}" target="_blank" rel="noopener"><div class="t">${esc(n.title)}</div><div class="m">${esc(n.source)} · ${ago(n.time)}</div></a>`).join(''):'<div class="msg">No news found.</div>';
+}
+$('chips').onclick=e=>{if(e.target.dataset.l){filter=e.target.dataset.l;renderNews()}};
+
+async function loadQuotes(){
+  try{
+    Q=await (await fetch('/api/quotes')).json();
+    const bad=Object.values(Q).filter(q=>q.error).length;
+    const states=Object.values(Q).map(q=>q.marketState).filter(Boolean);
+    $('dot').className='dot '+(bad?'err':'live');
+    $('status').textContent=(bad?`${bad} feed(s) failing · `:'Live · ')+'updated '+new Date().toLocaleTimeString()+(states.includes('REGULAR')?' · market open':'');
+    render();
+  }catch(e){$('dot').className='dot err';$('status').textContent='server unreachable'}
+}
+async function loadNews(){
+  try{NEWS=await (await fetch('/api/news')).json();renderNews()}catch(e){}
+}
+(async()=>{
+  P=await (await fetch('/api/portfolio')).json();
+  await loadQuotes();loadNews();
+  setInterval(loadQuotes,15000);
+  setInterval(loadNews,300000);
+})();
+</script>
+</body>
+</html>
